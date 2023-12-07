@@ -71,11 +71,12 @@ const users = new mongoose.model('User', userSchema, 'Users') // name - schema -
 app.get('/printAllData', async (req, res) => {
     try {
         console.log(1)
-        const found_student = await users.findOne();
-        const id = `${found_student.joinEvent[1]}`
-        const found_Event = await events.findOne({
-            "_id": id,
-        })
+        // const found_student = await users.findOne();
+        // const id = `${found_student.joinEvent[1]}`
+        // const found_Event = await events.findOne({
+        //     "_id": id,
+        // })
+        const found_Event = await events.find();
         console.log(found_Event);
         res.send(found_Event);
     } catch (error) {
