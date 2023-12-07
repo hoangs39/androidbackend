@@ -84,6 +84,16 @@ app.get('/printAllData', async (req, res) => {
     }
 });
 
+app.post('/createData/:name', async (req, res) => {
+    try {
+        const name = req.params.name;
+        const name1 = req.body.name;
+        res.status(200).send(name1 + ":" + name);
+    } catch (error) {
+        console.log(error);
+    }
+});
+
 // app.post('/createStudent', async (req,res) => {
 //     try{
 //         console.log(req.body);
