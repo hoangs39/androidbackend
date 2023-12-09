@@ -45,54 +45,266 @@ app.use(cors())
 
 // code here
 // Schema handler
-const eventsSchema = new mongoose.Schema({
+const sitesSchema = new mongoose.Schema({
     "name": String,
     "longtitude": String,
     "latitude": String,
-    "address": String,
+    "description" : String,
+    "owner": String,
+    "registers": [String]
+});
+
+const sites = new mongoose.model('Site', sitesSchema, 'Sites') 
+
+
+const changeSchema = new mongoose.Schema({
+    "changes": String,
+    "editor": String,
 })
-const events = new mongoose.model('Event', eventsSchema, 'Events') 
+
+const changes = new mongoose.model('Change', changeSchema, 'Changes') 
 
 const userSchema = new mongoose.Schema({
     "role" : String,
     "name": String,
     "password": String,
-    "phone": String,
-    "address": String,
-    "joinEvent": [{ type: Schema.Types.ObjectId, ref: 'Events' },],
-    "createEvent": [{ type: Schema.Types.ObjectId, ref: "Events" }],
 })
-
-
 
 const users = new mongoose.model('User', userSchema, 'Users') // name - schema - collection
 
 // Data handler
-app.get('/printAllData', async (req, res) => {
+
+//done
+app.get('/sites', async (req, res) => {
     try {
-        console.log(1)
-        // const found_student = await users.findOne();
-        // const id = `${found_student.joinEvent[1]}`
-        // const found_Event = await events.findOne({
-        //     "_id": id,
-        // })
-        const found_Event = await events.find();
-        console.log(found_Event);
-        res.send(found_Event);
+        const found_sites = await sites.find();
+        const found_changes = await changes.find();
+        if(found_sites != null){
+            res.status(200).send({
+                sites: found_sites,
+                changes : found_changes,
+            });
+        }else{
+            res.status(404).send("No Avaiable Sites");
+        }
+        
+    } catch (error) {
+        console.log(error);
+    }
+});
+//done
+app.get('/findSite/:name', async (req, res) => {
+    try {
+        const found_site = await sites.findOne({ name: req.params.name});
+        if (found_site != null) {
+            res.status(200).send(found_site);
+        } else {
+            res.status(404).send("Cant Find Site");
+        }
+
     } catch (error) {
         console.log(error);
     }
 });
 
-app.post('/createData/:name', async (req, res) => {
+//done
+app.post('/createSite', async (req, res) => {
     try {
-        const name = req.params.name;
-        const name1 = req.body.name;
-        res.status(200).send(name1 + ":" + name);
+       const name = req.body.name;
+       const latitude = req.body.latitude;
+       const longtitude = req.body.longtitude;
+       const description = req.body.description;
+    //    const userId = req.body.userId;
+        const userName = req.body.userName;
+       const registers = [];
+        console.log({
+            name,
+            latitude,
+            longtitude,
+            owner: userName,
+            description,
+            registers,
+        });
+
+        // const found_user = await users.findOne({_id: userId});
+       const newSite = await new sites({
+            name,
+            latitude,
+            longtitude,
+            owner: userName,
+            description,
+            registers,
+       })
+       await newSite.save();
+        const change = await new changes({
+            changes: "Created site with name: " + name,
+            editor: userName,
+        })
+        console.log({
+            changes: "Created site with name: " + name,
+            editor: userName,
+        })
+        await change.save();
+       res.status(200).send("Register Successfully!")
     } catch (error) {
         console.log(error);
     }
 });
+
+//done
+app.post('/joinSite/:name', async (req, res) => {
+    try {
+        const name = req.params.name;
+        
+        const register = req.body.userName;
+        console.log(register)
+        
+        const found_site = await sites.findOne({ name });
+        console.log(found_site.registers)
+        const registers = [...found_site.registers];
+        registers.push(register);
+        const found_site2 = await sites.findOneAndUpdate({ name }, { registers }, {new : true});
+        console.log(found_site2)
+
+        if(found_site != null){
+            res.status(200).send("Successfully Joined!");
+        }else{
+            res.status(404).send("Failed To Join!");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+
+
+//done
+app.delete('/deleteSite/:name', async (req, res) => {
+    try {
+        const name = req.params.name;
+        const userName = req.body.userName;
+        const delete_site = await sites.findOneAndDelete({
+            name
+        });
+        // const found_user = users.findOne({ _id: userId });
+        if (delete_site != null) {
+            const change = await new changes({
+                changes: "Deleted site with Name: " + name,
+                editor: userName,
+            })
+            await change.save();
+            res.status(200).send("Delete Completely")
+        } else {
+            res.status(500).send("Failed To Delete!")
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
+})
+//done
+app.put('/changeSite/:name', async (req, res) => {
+    try {
+        const name = req.params.name;
+        const siteName = req.body.siteName;
+        const siteLatitute = req.body.siteLatitute;
+        const siteLongtitude = req.body.siteLongtitude;
+        const description = req.body.description;
+        const userName = req.body.userName;
+        // const found_user = users.findOne({ name: userName });
+        const updated_site = await sites.findOneAndUpdate({ name }, {
+            name: siteName,
+            latitude: siteLatitute,
+            longtitude: siteLongtitude,
+            description
+        }, { },);
+        if (updated_site != null) {
+            const change = await new changes({
+                changes: "Updated site with name: " + siteName,
+                editor: userName,
+            })
+            await change.save();
+            res.status(200).send("Updated Completely")
+        } else {
+            res.status(500).send("Failed To Update!")
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+//done
+app.post("/authentication", async (req, res) => {
+    try {
+        const name = req.body.name;
+        const password = req.body.password;
+        console.log(name + password);
+        const user = await users.findOne({ name, password });
+        if (user != null) {
+            res.status(200).send(user);
+        } else {
+            res.status(404).send("Not Allowed!");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+// done
+app.post('/register', async (req, res) => {
+    try {
+        const name = req.body.name;
+        const role = req.body.role;
+        const password = req.body.password;
+        console.log(role+name+password);
+        const user = await new users({
+            role,
+            name,
+            password
+        })
+        await user.save();
+        res.status(200).send("Created Successfully!");
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+
+
+
+//done
+app.delete('/deleteUser/:name', async (req, res) => {
+    try {
+        const name = req.params.name;
+        const delete_user = await users.findOneAndDelete({
+            name
+        });
+        
+        if (delete_user != null) {
+            
+            res.status(200).send("Delete Completely")
+        } else {
+            res.status(500).send("Failed To Delete!")
+        }
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+//done
+app.get('/users', async (req, res) => {
+    try {
+        const found_users = await users.find();
+        if (found_users != null) {
+            res.status(200).send(found_users);
+        } else {
+            res.status(404).send("Not Found!")
+        }
+    } catch (error) {
+        console.log(error);
+    }
+})
 
 // app.post('/createStudent', async (req,res) => {
 //     try{
