@@ -47,7 +47,7 @@ app.use(cors())
 // Schema handler
 const sitesSchema = new mongoose.Schema({
     "name": String,
-    "longtitude": String,
+    "longitude": String,
     "latitude": String,
     "description" : String,
     "owner": String,
@@ -92,6 +92,7 @@ app.get('/sites', async (req, res) => {
         console.log(error);
     }
 });
+
 //done
 app.get('/findSite/:name', async (req, res) => {
     try {
@@ -120,7 +121,7 @@ app.post('/createSite', async (req, res) => {
         console.log({
             name,
             latitude,
-            longtitude,
+            longitude,
             owner: userName,
             description,
             registers,
@@ -130,7 +131,7 @@ app.post('/createSite', async (req, res) => {
        const newSite = await new sites({
             name,
             latitude,
-            longtitude,
+            longitude,
             owner: userName,
             description,
             registers,
@@ -145,7 +146,7 @@ app.post('/createSite', async (req, res) => {
             editor: userName,
         })
         await change.save();
-       res.status(200).send("Register Successfully!")
+       res.status(200).send("Created Successfully!")
     } catch (error) {
         console.log(error);
     }
@@ -208,14 +209,14 @@ app.put('/changeSite/:name', async (req, res) => {
         const name = req.params.name;
         const siteName = req.body.siteName;
         const siteLatitute = req.body.siteLatitute;
-        const siteLongtitude = req.body.siteLongtitude;
+        const siteLongitude = req.body.siteLongitude;
         const description = req.body.description;
         const userName = req.body.userName;
         // const found_user = users.findOne({ name: userName });
         const updated_site = await sites.findOneAndUpdate({ name }, {
             name: siteName,
             latitude: siteLatitute,
-            longtitude: siteLongtitude,
+            longtitude: siteLongitude,
             description
         }, { },);
         if (updated_site != null) {
@@ -264,7 +265,7 @@ app.post('/register', async (req, res) => {
             password
         })
         await user.save();
-        res.status(200).send("Created Successfully!");
+        res.status(200).send(user);
     } catch (error) {
         console.log(error);
     }
