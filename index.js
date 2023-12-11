@@ -265,7 +265,7 @@ app.post('/register', async (req, res) => {
             password
         })
         await user.save();
-        res.status(200).send(user);
+        res.status(200).send("User Created!");
     } catch (error) {
         console.log(error);
     }
