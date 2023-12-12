@@ -94,9 +94,24 @@ app.get('/sites', async (req, res) => {
 });
 
 //done
+app.get('/findSites/:name', async (req, res) => {
+    try {
+        const found_sites = await sites.find({ owner: req.params.name});
+        if (found_sites != null) {
+            res.status(200).send(found_sites);
+        } else {
+            res.status(404).send([]);
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+//done
 app.get('/findSite/:name', async (req, res) => {
     try {
-        const found_site = await sites.findOne({ name: req.params.name});
+        const found_site = await sites.findOne({ name: req.params.name });
         if (found_site != null) {
             res.status(200).send(found_site);
         } else {
