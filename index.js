@@ -232,7 +232,7 @@ app.put('/changeSite/:name', async (req, res) => {
         const updated_site = await sites.findOneAndUpdate({ name }, {
             name: siteName,
             latitude: siteLatitute,
-            longtitude: siteLongitude,
+            longitude: siteLongitude,
             description
         }, { },);
         if (updated_site != null) {
