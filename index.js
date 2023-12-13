@@ -142,13 +142,14 @@ app.post('/createSite', async (req, res) => {
             registers,
         });
 
+
         // const found_user = await users.findOne({_id: userId});
        const newSite = await new sites({
             name,
-            latitude,
             longitude,
-            owner: userName,
+            latitude,
             description,
+            owner: userName,
             registers,
        })
        await newSite.save();
