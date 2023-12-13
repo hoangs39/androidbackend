@@ -128,7 +128,7 @@ app.post('/createSite', async (req, res) => {
     try {
        const name = req.body.name;
        const latitude = req.body.latitude;
-       const longitude = req.body.longtitude;
+       const longitude = req.body.longitude;
        const description = req.body.description;
     //    const userId = req.body.userId;
         const userName = req.body.userName;
@@ -168,7 +168,7 @@ app.post('/createSite', async (req, res) => {
     }
 });
 
-//done
+//done 
 app.post('/joinSite/:name', async (req, res) => {
     try {
         const name = req.params.name;
@@ -195,7 +195,7 @@ app.post('/joinSite/:name', async (req, res) => {
 
 
 
-//done
+//done ok
 app.delete('/deleteSite/:name', async (req, res) => {
     try {
         const name = req.params.name;
