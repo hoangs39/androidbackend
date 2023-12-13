@@ -128,7 +128,7 @@ app.post('/createSite', async (req, res) => {
     try {
        const name = req.body.name;
        const latitude = req.body.latitude;
-       const longtitude = req.body.longtitude;
+       const longitude = req.body.longtitude;
        const description = req.body.description;
     //    const userId = req.body.userId;
         const userName = req.body.userName;
