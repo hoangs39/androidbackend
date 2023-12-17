@@ -51,7 +51,8 @@ const sitesSchema = new mongoose.Schema({
     "latitude": String,
     "description" : String,
     "owner": String,
-    "registers": [String]
+    "registers": [String],
+    "cleanup" : String 
 });
 
 const sites = new mongoose.model('Site', sitesSchema, 'Sites') 
@@ -133,6 +134,7 @@ app.post('/createSite', async (req, res) => {
     //    const userId = req.body.userId;
         const userName = req.body.userName;
        const registers = [];
+       const cleanup = "0";
         console.log({
             name,
             latitude,
@@ -140,6 +142,7 @@ app.post('/createSite', async (req, res) => {
             owner: userName,
             description,
             registers,
+            cleanup
         });
 
 
@@ -151,6 +154,7 @@ app.post('/createSite', async (req, res) => {
             description,
             owner: userName,
             registers,
+            cleanup
        })
        await newSite.save();
         const change = await new changes({
@@ -228,12 +232,14 @@ app.put('/changeSite/:name', async (req, res) => {
         const siteLongitude = req.body.siteLongitude;
         const description = req.body.description;
         const userName = req.body.userName;
+        const cleanup = req.body.cleanup;
         // const found_user = users.findOne({ name: userName });
         const updated_site = await sites.findOneAndUpdate({ name }, {
             name: siteName,
             latitude: siteLatitute,
             longitude: siteLongitude,
-            description
+            description,
+            cleanup
         }, { },);
         if (updated_site != null) {
             const change = await new changes({
